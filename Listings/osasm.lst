@@ -1,0 +1,167 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         ;/******************************************************
+                       ***********************/
+    2 00000000         ; OSasm.s: low-level OS commands, written in assembly   
+                                           */
+    3 00000000         ; Runs on LM4F120/TM4C123/MSP432
+    4 00000000         ; Lab 4 starter file
+    5 00000000         ; March 25, 2016
+    6 00000000         
+    7 00000000         
+    8 00000000         
+    9 00000000         
+   10 00000000                 AREA             |.text|, CODE, READONLY, ALIGN=
+2
+   11 00000000                 THUMB
+   12 00000000                 REQUIRE8
+   13 00000000                 PRESERVE8
+   14 00000000         
+   15 00000000                 EXTERN           RunPt       ; currently running
+                                                             thread
+   16 00000000                 EXPORT           StartOS
+   17 00000000                 EXPORT           SysTick_Handler
+   18 00000000                 IMPORT           Scheduler
+   19 00000000         
+   20 00000000         
+   21 00000000         SysTick_Handler                      ; 1) Saves R0-R3,R1
+                                                            2,LR,PC,PSR
+   22 00000000 B672            CPSID            I           ; 2) Prevent interr
+                                                            upt during switch
+   23 00000002         ;YOU IMPLEMENT THIS (same as Lab 3)
+   24 00000002 E92D 0FF0       PUSH             {R4-R11}    ; 3) Save remaining
+                                                             regs r4-11
+   25 00000006 4810            LDR              R0, =RunPt  ; 4) R0=pointer to 
+                                                            RunPt, old thread
+   26 00000008 6801            LDR              R1, [R0]    ;    R1 = RunPt
+   27 0000000A F8C1 D000       STR              SP, [R1]    ; 5) Save SP into T
+                                                            CB
+   28 0000000E         
+   29 0000000E B500            push             {LR}
+   30 00000010 F7FF FFFE       BL               Scheduler   ;not sure if I need
+                                                             to pop anything fo
+                                                            r this as I overwri
+                                                            te everything anywa
+                                                            y
+   31 00000014 F85D EB04       POP              {LR}
+   32 00000018 480B            LDR              R0, =RunPt
+   33 0000001A 6801            LDR              R1, [R0]    ;getting the new st
+                                                            ack pointer after r
+                                                            unning periodic tas
+                                                            ks
+   34 0000001C         
+   35 0000001C         ;LDR  R1, [R1,#4] ; 6) R1 = RunPt->next
+   36 0000001C         ;STR  R1, [R0] ;    RunPt = R1
+   37 0000001C         
+   38 0000001C F8D1 D000       LDR              SP, [R1]    ; 7) new thread SP;
+                                                             SP = RunPt->sp;
+   39 00000020 E8BD 0FF0       POP              {R4-R11}    ; 8) restore regs r
+                                                            4-11
+   40 00000024 B662            CPSIE            I           ; 9) tasks run with
+                                                             interrupts enabled
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+                                                            
+   41 00000026 4770            BX               LR          ; 10) restore R0-R3
+                                                            ,R12,LR,PC,PSR
+   42 00000028         
+   43 00000028         StartOS
+   44 00000028         ;YOU IMPLEMENT THIS (same as Lab 3)
+   45 00000028 B662            CPSIE            I           ; Enable interrupts
+                                                             at processor level
+                                                            
+   46 0000002A 4807            LDR              R0, =RunPt  ; grab the pointer
+   47 0000002C 6801            LDR              R1, [R0]    ;get pointer to the
+                                                             thread pointer
+   48 0000002E F8D1 D000       LDR              SP, [R1]    ;insert the thread 
+                                                            pointer into SP
+   49 00000032 E8BD 0FF0       POP              {R4-R11}    ;start poping regis
+                                                            ter from stack to r
+                                                            egisters
+   50 00000036 BC0F            POP              {R0-R3}     ;pop R0, R3
+   51 00000038 F85D CB04       POP              {R12}       ;pop R12
+   52 0000003C B001            ADD              SP, SP, #4  ;purge initial LR f
+                                                            rom preset stack in
+                                                             stack data
+   53 0000003E F85D EB04       POP              {LR}        ;set LR to the firs
+                                                            t task
+   54 00000042 B001            ADD              SP, SP, #4  ;purge PSR from sta
+                                                            ck
+   55 00000044 4770            BX               LR          ; start first threa
+                                                            d
+   56 00000046         
+   57 00000046 00 00           ALIGN
+   58 00000048                 END
+              00000000 
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4 --apcs=interw
+ork --depend=.\objects\osasm.d -o.\objects\osasm.o -I.\RTE\_Target -IC:\Users\T
+iger\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include -IC:\Users\Tige
+r\AppData\Local\Arm\Packs\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123 --predefin
+e="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 533" --predefine="_RTE_ S
+ETA 1" --predefine="TM4C123GH6PM SETA 1" --predefine="_RTE_ SETA 1" --list=.\li
+stings\osasm.lst osasm.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+.text 00000000
+
+Symbol: .text
+   Definitions
+      At line 10 in file osasm.s
+   Uses
+      None
+Comment: .text unused
+StartOS 00000028
+
+Symbol: StartOS
+   Definitions
+      At line 43 in file osasm.s
+   Uses
+      At line 16 in file osasm.s
+Comment: StartOS used once
+SysTick_Handler 00000000
+
+Symbol: SysTick_Handler
+   Definitions
+      At line 21 in file osasm.s
+   Uses
+      At line 17 in file osasm.s
+Comment: SysTick_Handler used once
+3 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+External symbols
+
+RunPt 00000000
+
+Symbol: RunPt
+   Definitions
+      At line 15 in file osasm.s
+   Uses
+      At line 25 in file osasm.s
+      At line 32 in file osasm.s
+      At line 46 in file osasm.s
+
+Scheduler 00000000
+
+Symbol: Scheduler
+   Definitions
+      At line 18 in file osasm.s
+   Uses
+      At line 30 in file osasm.s
+Comment: Scheduler used once
+2 symbols
+341 symbols in table

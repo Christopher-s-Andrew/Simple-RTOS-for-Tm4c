@@ -1,0 +1,11 @@
+.\objects\mainfile.o: mainFile.c
+.\objects\mainfile.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\mainfile.o: ../inc/BSP.h
+.\objects\mainfile.o: ../inc/Profile.h
+.\objects\mainfile.o: Texas.h
+.\objects\mainfile.o: ../inc/CortexM.h
+.\objects\mainfile.o: os.h
+.\objects\mainfile.o: our_stdio.h
+.\objects\mainfile.o: Filesystem.h
+.\objects\mainfile.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\objects\mainfile.o: Queue.h
